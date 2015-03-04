@@ -50,6 +50,7 @@ data Args = Args
     , localhost :: Bool
     , rootdir :: Maybe String
     , title :: String
+    , disableUpload :: Bool
     } deriving (Show, Data, Typeable)
 
 type CabalFile = FilePath
@@ -203,6 +204,7 @@ main = do
         , localhost = False &= help "Only allow connections from localhost?"
         , rootdir = Nothing &= help "Root folder for Yackage config file and packages"
         , title = "Yackage" &= help "Page title displayed in browser"
+        , disableUpload = False &= help "Disable all uploads and make this read-only"
         } &= program progname &= summary "Run a Yackage server"
     path <-
         case rootdir args of
