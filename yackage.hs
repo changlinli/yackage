@@ -37,6 +37,7 @@ import Control.Monad (join, unless)
 import System.Console.CmdArgs
 import Network.Wai
 import Network.Wai.Handler.Warp (runSettings, defaultSettings, settingsPort, settingsHost)
+import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Network.HTTP.Types (status403)
 import qualified Data.Text as T
 import Text.Blaze.Html (toHtml)
@@ -219,12 +220,12 @@ main = do
             else return $ Just Map.empty
     m <- maybe (error "Invalid Yackage config file") return mMay
     m' <- liftIO $ newMVar m
-    app <- toWaiApp $ Yackage path m' (password args) (title args)
+    app <- toWaiAppPlain $ Yackage path m' (password args) (title args)
     putStrLn $ "Running Yackage on port " ++ show (port args) ++ ", rootdir: " ++ path
     runSettings defaultSettings
         { settingsPort = port args
         , settingsHost = if localhost args then "127.0.0.1" else "*"
-        } app
+        } (logStdoutDev app)
 
 unPackageName (PackageName s) = s
 
